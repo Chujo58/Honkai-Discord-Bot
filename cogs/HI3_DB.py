@@ -132,4 +132,6 @@ class HI3(commands.Cog, name='HI3'):
                     StackImage(images[index], images[index+1], 'B.png')
                 stig_pos += 1
 
-        
+        await ctx.send('T.png')
+        await ctx.send('M.png')
+        await ctx.send('B.png')
