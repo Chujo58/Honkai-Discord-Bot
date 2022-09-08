@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import numpy as np
 
 URL = 'https://honkaiimpact3.fandom.com/wiki/Stigmata'
 
@@ -105,4 +106,4 @@ def GetInfoFromURL(StigmataSetName):
     return StigInfos
 
 Allan_poe = GetInfoFromURL('Allan Poe')
-print(Allan_poe['TEXT'])
+print(list(filter(None, Allan_poe['TEXT'][10].split("\n"))))

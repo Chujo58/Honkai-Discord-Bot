@@ -116,7 +116,7 @@ class HI3(commands.Cog, name='HI3'):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command(guild_ids=[817117856147439646])
+    @commands.command()
     async def stigmata(self, ctx, set_name):
         set_gen_info = AllStigmataSets[set_name]
         rarity = set_gen_info['RARITY']
@@ -161,6 +161,13 @@ class HI3(commands.Cog, name='HI3'):
         bot_stig_embed.set_thumbnail(url="attachment://image3.png")
         await ctx.send(file=B_png, embed=bot_stig_embed)
         
+        set_effect_embed = discord.Embed(title=" ", color=0x8b47bf)
+        set_effect_embed.set_author(name=f"{set_name} - {rarity}")
+        set_effect_text = list(filter(None, text[10].split("\n")))
+        set_effect_embed.add_field(name=set_effect_text[0], value=set_effect_text[1], inline=False)
+        set_effect_embed.add_field(name=set_effect_text[2], value=set_effect_text[3], inline=False)
+        await ctx.send(embed=set_effect_embed)
+
 
 def setup(bot):
     bot.add_cog(HI3(bot))
