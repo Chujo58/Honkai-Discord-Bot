@@ -96,8 +96,13 @@ def GetInfoFromURL(StigmataSetName):
     text.append(StigmataInformation[8].find('div').text)
 
     StigInfos['TEXT'] = text
+    stig_names_info = StigmataInformation[0].find_all('span', {'class':'tabberex-tab-header'})
+    stig_names = []
+    for name in stig_names_info:
+        stig_names.append(name.text)
+    StigInfos['NAMES'] = stig_names
 
     return StigInfos
 
 Allan_poe = GetInfoFromURL('Allan Poe')
-print(Allan_poe['IMAGE_URL'])
+print(Allan_poe['TEXT'])

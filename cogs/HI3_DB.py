@@ -95,13 +95,20 @@ def GetInfoFromURL(StigmataSetName):
     text.append(StigmataInformation[8].find('div').text)
 
     StigInfos['TEXT'] = text
+
+    stig_names_info = StigmataInformation[0].find_all('span', {'class':'tabberex-tab-header'})
+    stig_names = []
+    for name in stig_names_info:
+        stig_names.append(name.text)
+    StigInfos['NAMES'] = stig_names
+
     return StigInfos
 
 def StackImage(first_image_url, second_image_url, stacked_image_name):
-    urllib.request.urlretrieve(first_image_url, 'Front.png')
-    urllib.request.urlretrieve(second_image_url, 'Back.png')
-    front = Image.open('Front.png')
-    back = Image.open('Back.png')
+    urllib.request.urlretrieve(first_image_url, 'Images/Front.png')
+    urllib.request.urlretrieve(second_image_url, 'Images/Back.png')
+    front = Image.open('Images/Front.png')
+    back = Image.open('Images/Back.png')
     back.paste(front, (0,0), front)
     back.save(stacked_image_name)
 
@@ -116,22 +123,44 @@ class HI3(commands.Cog, name='HI3'):
         icons = set_gen_info['ICONS']
         set_stats = GetInfoFromURL(set_name)
         images = set_stats['IMAGE_URL']
+        names = set_stats['NAMES']
+        text = set_stats['TEXT']
         
-        if len(images) == 6:
-            index_front = []
-            for value in range(0,6):
-                if value % 2 == 0:
-                    index_front.append(value)
-            stig_pos = 0
-            for index in index_front:
-                if stig_pos == 0:
-                    StackImage(images[index], images[index+1], 'T.png')
-                if stig_pos == 1:
-                    StackImage(images[index], images[index+1], 'M.png')
-                if stig_pos == 2:
-                    StackImage(images[index], images[index+1], 'B.png')
-                stig_pos += 1
+        index_front = []
+        for value in range(0,len(images)):
+            if value % 2 == 0:
+                index_front.append(value)
+        stig_pos = 0
+        for index in index_front:
+            if stig_pos == 0:
+                StackImage(images[index], images[index+1], 'Images/T.png')
+            if stig_pos == 1:
+                StackImage(images[index], images[index+1], 'Images/M.png')
+            if stig_pos == 2:
+                StackImage(images[index], images[index+1], 'Images/B.png')
+            stig_pos += 1
 
-        await ctx.send('T.png')
-        await ctx.send('M.png')
-        await ctx.send('B.png')
+        top_stig_embed = discord.Embed(title=" ", color=0xfc8e73)
+        top_stig_embed.set_author(name=names[0], icon_url=icons[0])
+        top_stig_embed.add_field(name=f"Effect - {text[4]}", value=text[5])
+        T_png = discord.File('Images/T.png', filename='image.png')
+        top_stig_embed.set_thumbnail(url="attachment://image.png")
+        await ctx.send(file=T_png, embed=top_stig_embed)
+        
+        mid_stig_embed = discord.Embed(title=" ", color=0xa3abf3)
+        mid_stig_embed.set_author(name=names[1], icon_url=icons[1])
+        mid_stig_embed.add_field(name=f"Effect - {text[6]}", value=text[7])
+        M_png = discord.File('Images/M.png', filename='image2.png')
+        mid_stig_embed.set_thumbnail(url="attachment://image2.png")
+        await ctx.send(file=M_png, embed=mid_stig_embed)
+
+        bot_stig_embed = discord.Embed(title=" ", color=0xb3c965)
+        bot_stig_embed.set_author(name=names[2], icon_url=icons[2])
+        bot_stig_embed.add_field(name=f"Effect - {text[8]}", value=text[9])
+        B_png = discord.File('Images/B.png', filename='image3.png')
+        bot_stig_embed.set_thumbnail(url="attachment://image3.png")
+        await ctx.send(file=B_png, embed=bot_stig_embed)
+        
+
+def setup(bot):
+    bot.add_cog(HI3(bot))
