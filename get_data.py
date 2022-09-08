@@ -90,7 +90,7 @@ def GetInfoFromURL(StigmataSetName):
     StigInfos['IMAGE_URL'] = urls
 
     text = []
-    for i in [1,3,5,7]:
+    for i in [3,5,7]:
         infos = StigmataInformation[i].find_all('div')
         for info in infos:
             text.append(info.text)
@@ -105,5 +105,6 @@ def GetInfoFromURL(StigmataSetName):
 
     return StigInfos
 
-Allan_poe = GetInfoFromURL('Allan Poe')
-print(list(filter(None, Allan_poe['TEXT'][10].split("\n"))))
+Allan_poe = GetInfoFromURL('Zorro')
+#print(list(filter(None, Allan_poe['TEXT'][10].split("\n"))))
+print(Allan_poe['TEXT'])

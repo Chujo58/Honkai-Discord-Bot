@@ -88,7 +88,7 @@ def GetInfoFromURL(StigmataSetName):
     StigInfos['IMAGE_URL'] = urls
 
     text = []
-    for i in [1,3,5,7]:
+    for i in [3,5,7]:
         infos = StigmataInformation[i].find_all('div')
         for info in infos:
             text.append(info.text)
@@ -123,6 +123,7 @@ class HI3(commands.Cog, name='HI3'):
         icons = set_gen_info['ICONS']
         set_stats = GetInfoFromURL(set_name)
         images = set_stats['IMAGE_URL']
+        print(images)
         names = set_stats['NAMES']
         text = set_stats['TEXT']
         
@@ -142,28 +143,28 @@ class HI3(commands.Cog, name='HI3'):
 
         top_stig_embed = discord.Embed(title=" ", color=0xfc8e73)
         top_stig_embed.set_author(name=names[0], icon_url=icons[0])
-        top_stig_embed.add_field(name=f"Effect - {text[4]}", value=text[5])
+        top_stig_embed.add_field(name=f"Effect - {text[0]}", value=text[1])
         T_png = discord.File('Images/T.png', filename='image.png')
         top_stig_embed.set_thumbnail(url="attachment://image.png")
         await ctx.send(file=T_png, embed=top_stig_embed)
         
         mid_stig_embed = discord.Embed(title=" ", color=0xa3abf3)
         mid_stig_embed.set_author(name=names[1], icon_url=icons[1])
-        mid_stig_embed.add_field(name=f"Effect - {text[6]}", value=text[7])
+        mid_stig_embed.add_field(name=f"Effect - {text[2]}", value=text[3])
         M_png = discord.File('Images/M.png', filename='image2.png')
         mid_stig_embed.set_thumbnail(url="attachment://image2.png")
         await ctx.send(file=M_png, embed=mid_stig_embed)
 
         bot_stig_embed = discord.Embed(title=" ", color=0xb3c965)
         bot_stig_embed.set_author(name=names[2], icon_url=icons[2])
-        bot_stig_embed.add_field(name=f"Effect - {text[8]}", value=text[9])
+        bot_stig_embed.add_field(name=f"Effect - {text[4]}", value=text[5])
         B_png = discord.File('Images/B.png', filename='image3.png')
         bot_stig_embed.set_thumbnail(url="attachment://image3.png")
         await ctx.send(file=B_png, embed=bot_stig_embed)
         
         set_effect_embed = discord.Embed(title=" ", color=0x8b47bf)
         set_effect_embed.set_author(name=f"{set_name} - {rarity}")
-        set_effect_text = list(filter(None, text[10].split("\n")))
+        set_effect_text = list(filter(None, text[6].split("\n")))
         set_effect_embed.add_field(name=set_effect_text[0], value=set_effect_text[1], inline=False)
         set_effect_embed.add_field(name=set_effect_text[2], value=set_effect_text[3], inline=False)
         await ctx.send(embed=set_effect_embed)
