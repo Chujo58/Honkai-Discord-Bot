@@ -64,6 +64,7 @@ GetGenInfo(TwoStarsStigmataSets, AllStigmataSets, 2)
 GetGenInfo(OneStarsStigmataSets, AllStigmataSets, 1)
 
 def GetInfoFromURL(StigmataSetName):
+    stig_pos = ['(T)','(M)','(B)']
     URL = AllStigmataSets[StigmataSetName]['URL']
     page = requests.get(url=URL)
     soup = BeautifulSoup(page.content, 'html.parser')
@@ -82,15 +83,21 @@ def GetInfoFromURL(StigmataSetName):
         all_stats.append(stats)
     StigInfos['STATS'] = all_stats
 
-    images = soup.find_all('a', {'class':'image'})[0:6]
+    #images = soup.find_all('a', {'class':'image'})[0:6]
     urls = []
-    for image in images:
-        urls.append(image.get('href'))
+    #for image in images:
+        #urls.append(image.get('href'))
 
+
+    print(soup.find('img', width=720, height=720, alt=StigmataSetName+' (B).png')['src'])
+    for position in stig_pos:
+        url = soup.find('img', width=720, height=720, alt=StigmataSetName+f' {position}.png')['src']
+        urls.append(url)
     StigInfos['IMAGE_URL'] = urls
-
+    
     text = []
-    print(StigmataInformation[0].find_all('div'))
+    #print(StigmataInformation[0].find_all('div'))
+
     for i in [3,5,7]:
         infos = StigmataInformation[i].find_all('div')
         for info in infos:
@@ -106,7 +113,7 @@ def GetInfoFromURL(StigmataSetName):
 
     return StigInfos
 
-Allan_poe = GetInfoFromURL('Elysia (Stigmata)')
+Allan_poe = GetInfoFromURL('Allan Poe')
 #print(list(filter(None, Allan_poe['TEXT'][10].split("\n"))))
-#print(Allan_poe['TEXT'])
+print(Allan_poe['IMAGE_URL'])
 

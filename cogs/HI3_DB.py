@@ -123,9 +123,10 @@ class HI3(commands.Cog, name='HI3'):
         icons = set_gen_info['ICONS']
         set_stats = GetInfoFromURL(set_name)
         images = set_stats['IMAGE_URL']
-        print(images)
         names = set_stats['NAMES']
         text = set_stats['TEXT']
+        stats = set_stats['STATS']
+        
         
         index_front = []
         for value in range(0,len(images)):
@@ -139,25 +140,29 @@ class HI3(commands.Cog, name='HI3'):
                 StackImage(images[index], images[index+1], 'Images/M.png')
             if stig_pos == 2:
                 StackImage(images[index], images[index+1], 'Images/B.png')
-            stig_pos += 1
+            stig_pos += 1           
+
 
         top_stig_embed = discord.Embed(title=" ", color=0xfc8e73)
         top_stig_embed.set_author(name=names[0], icon_url=icons[0])
-        top_stig_embed.add_field(name=f"Effect - {text[0]}", value=text[1])
+        top_stig_embed.add_field(name='Max stats', value=stats[0], inline=False)
+        top_stig_embed.add_field(name=f"Effect - {text[0]}", value=text[1], inline=False)
         T_png = discord.File('Images/T.png', filename='image.png')
         top_stig_embed.set_thumbnail(url="attachment://image.png")
         await ctx.send(file=T_png, embed=top_stig_embed)
         
         mid_stig_embed = discord.Embed(title=" ", color=0xa3abf3)
         mid_stig_embed.set_author(name=names[1], icon_url=icons[1])
-        mid_stig_embed.add_field(name=f"Effect - {text[2]}", value=text[3])
+        mid_stig_embed.add_field(name='Max stats', value=stats[1], inline=False)
+        mid_stig_embed.add_field(name=f"Effect - {text[2]}", value=text[3], inline=False)
         M_png = discord.File('Images/M.png', filename='image2.png')
         mid_stig_embed.set_thumbnail(url="attachment://image2.png")
         await ctx.send(file=M_png, embed=mid_stig_embed)
 
         bot_stig_embed = discord.Embed(title=" ", color=0xb3c965)
         bot_stig_embed.set_author(name=names[2], icon_url=icons[2])
-        bot_stig_embed.add_field(name=f"Effect - {text[4]}", value=text[5])
+        bot_stig_embed.add_field(name='Max stats', value=stats[2], inline=False)
+        bot_stig_embed.add_field(name=f"Effect - {text[4]}", value=text[5], inline=False)
         B_png = discord.File('Images/B.png', filename='image3.png')
         bot_stig_embed.set_thumbnail(url="attachment://image3.png")
         await ctx.send(file=B_png, embed=bot_stig_embed)
