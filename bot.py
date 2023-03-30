@@ -54,6 +54,8 @@ async def unload(ctx, extension):
 
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
+        if filename == "HI3_DB.py":
+            continue
         bot.load_extension(f'cogs.{filename[:-3]}')
 
 bot.run(TOKEN)
