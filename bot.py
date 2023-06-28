@@ -2,8 +2,12 @@ import discord
 from discord.ext import commands
 import os
 import json
+import time
+from discord import option
 
-TOKEN = "MTAxNjgyNjI3MDcwNjgzMTM5MA.GgQzJh.xb_kFHNE6k6Lyb3pmJdsr-dmV0C6uVSEXPxf9I"
+with open("key.txt", "r") as f:
+    TOKEN = f.read()
+
 intents = discord.Intents().all()
 
 """class MyHelp(commands.HelpCommand):
@@ -18,9 +22,7 @@ intents = discord.Intents().all()
         channel = self.get_destination()
         await channel.send(embed=embed)"""
 
-help_command = commands.DefaultHelpCommand(
-    no_category = 'Commands'
-)
+help_command = commands.MinimalHelpCommand()
 
 def get_prefix(bot, message):
     with open('prefixes.json', 'r') as f:
@@ -33,24 +35,37 @@ bot = commands.Bot(command_prefix=get_prefix, help_command=help_command, intents
 async def on_ready():
     print(f"We have logged in as {bot.user}")
 
-@bot.slash_command(guild_ids=[817117856147439646])
-async def hello(ctx):
-    await ctx.respond("Hello!")
+async def get_cogs(ctx):
+    cogs = []
+    for file in os.listdir('./cogs'):
+        if file.endswith('.py'):
+            cogs.append(file[:-3])
 
-@bot.command()
+    return cogs
+    
+
+@bot.slash_command(guild_ids=[817117856147439646],description="Loads an extension.")
 @commands.has_permissions(administrator=True)
+@option('extension',str,description="Extension chosen",autocomplete=get_cogs)
 async def load(ctx, extension):
     bot.load_extension(f'cogs.{extension}')
+    await ctx.respond(f"Loaded extension!")
 
-@bot.command()
+@bot.slash_command(guild_ids=[817117856147439646],description="Reloads an extension.")
 @commands.has_permissions(administrator=True)
+@option('extension',str,description="Extension chosen",autocomplete=get_cogs)
 async def reload(ctx, extension):
+    bot.unload_extension(f'cogs.{extension}')
+    time.sleep(0.01)
     bot.load_extension(f'cogs.{extension}')
+    await ctx.respond(f"Reloaded extension!")
 
-@bot.command()
+@bot.slash_command(guild_ids=[817117856147439646],description="Unloads an extension.")
 @commands.has_permissions(administrator=True)
+@option('extension',str,description="Extension chosen",autocomplete=get_cogs)
 async def unload(ctx, extension):
     bot.unload_extension(f'cogs.{extension}')
+    await ctx.respond(f"Unloaded extension!")
 
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):

@@ -1,0 +1,4 @@
+key.txt
+cogs/__pycache__
+*.pyc
+prefixes.json

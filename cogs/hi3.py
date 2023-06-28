@@ -10,7 +10,7 @@ STIG_URL = 'https://honkaiimpact3.fandom.com/wiki/Stigmata'
 stig_page = requests.get(url=STIG_URL)
 stig_soup = bs4.BeautifulSoup(stig_page.content, 'html.parser')
 
-Header_H1 = stig_soup.find(id='Stigmata_List')
+Header_H1 = stig_soup.find(id='firstHeading')
 
 Headers_H2_3 = Header_H1.find_all_next(class_='mw-headline')
 Stig_List_Headers = {}
@@ -34,6 +34,7 @@ for i in range(0, len(Headers_H2_3)):
         Stig_List_Headers[rarity[rar_count]].append(Headers_H2_3[i].find_parent('h3'))
         Stig_List[rarity[rar_count]][Headers_H2_3[i].text] = {}
 
+print(Stig_List)
 
 def get_single_info(list_of_td):
     url_img_h = list(list_of_td[0])[0]
@@ -64,7 +65,6 @@ def get_single_info(list_of_td):
             effect_text += f"**{item.text}**"
         else:
             effect_text += item.text
-
 
 
 def get_stig_info(one_td, has_effect):
@@ -173,6 +173,7 @@ def get_set_info(list_of_td, has_effect):
 
     return set_name, top_stig_info, mid_stig_info, bot_stig_info, set_2_effect, set_3_effect
 
+
 def get_table(rarity_, set_single):
     if rarity_ != '2★' and rarity_ != '1★':
             type_s = list(Stig_List[rarity_])[set_single]
@@ -195,13 +196,70 @@ def get_table(rarity_, set_single):
     # allan = sets[0].find_all('td')
     # print(get_set_info(allan)[3])
 
-get_table(rarity[0], 0)
-get_table(rarity[1], 0)
-get_table(rarity[2], 0)
-get_table(rarity[3], 0)
+for key in Stig_List.keys():
+    print(key)
+    get_table(key, 0)
+# get_table(rarity[0], 0)
+# get_table(rarity[1], 0)
+# get_table(rarity[2], 0)
+# get_table(rarity[3], 0)
 
-# print(Stig_List['2★'])
-# print(Stig_List[rarity[3]]['Sets'])
+
+WEAPON_URL = 'https://honkaiimpact3.fandom.com/wiki/Weapons'
+weapon_page = requests.get(url=WEAPON_URL)
+weapon_soup = bs4.BeautifulSoup(weapon_page.content, 'html.parser')
+
+weapon_types = ['Pistols','Katanas','Cannons','Crosses','Greatswords','Gauntlets','Scythes','Lances','Bows','Chakrams']
+weapon_urls = []
+weapon_rarity = ['5★','4★','3★','2★','1★']
+
+def is_weapon(tag):
+    if tag.has_attr('title'):
+        if tag['title'] in weapon_types:
+            return True
+    
+def get_urls(list_):
+    items = weapon_soup.find_all(is_weapon)
+    previous_href = ""
+    for item in items:
+        href = item['href']
+        if href == previous_href:
+            continue
+        else:
+            list_.append(WEAPON_URL[:-13]+href)
+            previous_href = href
+
+get_urls(weapon_urls)
+
+def get_weapon(url):
+    url_page = requests.get(url=url)
+    url_soup = bs4.BeautifulSoup(url_page.content, 'html.parser')
+    main_div = url_soup.find(class_='mw-parser-output').find_next('div')
+    weapon_gen_info = main_div.find_all('div')[0]
+    print(weapon_gen_info.find('b').text, weapon_gen_info.find('span')['title'])
+    
+
+def get_weapons(url, rarity):
+    url_page = requests.get(url=url)
+    url_soup = bs4.BeautifulSoup(url_page.content, 'html.parser')
+    headers_h2 = url_soup.find_all('h2')
+    header_to_use = None
+    for header in headers_h2:
+        if rarity in header.text:
+            header_to_use = header
+            break
+    
+    for s in header_to_use.find_next_siblings():
+        if s.name == 'div':
+            divs = s.find_all('div')
+            weapon_url = divs[0].find('a')['href']
+            print(weapon_url)
+            # print(weapon_name, weapon_stats)
+            
+        else:
+            break
+
+get_weapon(WEAPON_URL[:-13]+'/wiki/Domain_of_Genesis')
 
 emojis = None
 
@@ -221,7 +279,7 @@ class HI3(commands.Cog, name='HI3'):
         return [stig for stig in list(Stig_List[chosen_rarity][chosen_type]) if stig.startswith(self.value.upper())]
 
 
-    @commands.slash_command(guild_ids=[817117856147439646])
+    @commands.slash_command(guild_ids=[817117856147439646],description="Find a stigmata")
     @option('rarity', description="Choose the rarity of the stigmata you're looking for.", autocomplete=discord.utils.basic_autocomplete(['4★','3★','2★','1★']))
     @option('stig_type', description="The type of stigmata you're looking for.", autocomplete=stig_type_autocomp)
     @option('stig_name', description="The stigmata's name.", autocomplete=stig_list_autocomp)
@@ -289,6 +347,18 @@ class HI3(commands.Cog, name='HI3'):
         await ctx.send(file=B_png, embed=B_embed)
         await ctx.send(embed=Set_embed)
         
+    # @commands.slash_command(guild_ids=[817117856147439646],description="Find a weapon.")  
+    # # @option('weapon_type', description="Type of weapon looked for.", autocomplete=discord.utils.basic_autocomplete(['Cannons','Crosses','Greatswords','Gauntlets','Scythes','Lances','Bows','Chakrams']))
+    # async def weapon(self, ctx, type_):
+    #     await ctx.respond(f"You choose {type_}.")
+
+    @commands.slash_command(guild_ids=[817117856147439646],description="Find a weapon")
+    @option('weapon_type',str,description="Type of weapon looked for.", autocomplete=discord.utils.basic_autocomplete(weapon_types))
+    async def weapon(self, ctx, weapon_type):
+        index = weapon_types.index(weapon_type)
+        await ctx.respond(weapon_urls[index])
+
+
     @commands.slash_command(guild_ids=[817117856147439646])
     async def test5(self, ctx):
         global emojis

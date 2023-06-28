@@ -34,7 +34,7 @@ class on_join(commands.Cog, name='OnJoin'):
             prefixes = json.load(file)
 
         if prefix is None:
-            await ctx.send(f"Your guild's prefix is `{prefixes[str(ctx.guild.id)]}`.")
+            await ctx.respond(f"Your guild's prefix is `{prefixes[str(ctx.guild.id)]}`.")
 
         if prefix is not None:
             prefixes[str(ctx.guild.id)] = prefix
@@ -42,7 +42,7 @@ class on_join(commands.Cog, name='OnJoin'):
             with open('prefixes.json', 'w') as file:
                 json.dump(prefixes, file, indent=4)
             
-            await ctx.send(f"The guild's prefix has been changed to `{prefix}`.")
+            await ctx.respond(f"The guild's prefix has been changed to `{prefix}`.")
 
     @commands.slash_command(guild_ids=[817117856147439646], description='Changes the prefix for your guild.')
     @commands.has_permissions(administrator=True)
@@ -59,7 +59,7 @@ class on_join(commands.Cog, name='OnJoin'):
             with open('prefixes.json', 'w') as file:
                 json.dump(prefixes, file, indent=4)
             
-            await ctx.send(f"The guild's prefix has been changed to `{prefix}`.")
+            await ctx.respond(f"The guild's prefix has been changed to `{prefix}`.")
         
     
 
