@@ -16,9 +16,24 @@ Headers_H2_3 = Header_H1.find_all_next(class_='mw-headline')
 Stig_List_Headers = {}
 Stig_List = {}
 
-rarity = ['4★','3★','2★','1★']
+# rarity = ['4★','3★','2★','1★']
 
-Type_Header = [True if '★' in h.text else False for h in Headers_H2_3]
+# Type_Header = [True if '★' in h.text else False for h in Headers_H2_3]
+Type_Header = []
+for header in Headers_H2_3:
+    if "Stigmata" in header.text:
+        Type_Header.append(True)
+    else:
+        Type_Header.append(False)
+# for header in Headers_H2_3:
+#     for rar in rarity:
+#         if header.text == f"{rar} Stigmata":
+#             Type_Header.append(True)
+#             break
+#         else:
+#             Type_Header.append(False)
+
+rarity = [h.text for index, h in enumerate(Headers_H2_3) if Type_Header[index]]
 
 rar_count = 0
 for i in range(0, len(Headers_H2_3)):
@@ -27,14 +42,14 @@ for i in range(0, len(Headers_H2_3)):
         Stig_List[Headers_H2_3[i].text] = {}
         if rar_count == 0 and i == 0: rar_count = 0
         else: rar_count += 1
-        if "2★" == Headers_H2_3[i].text or "1★" == Headers_H2_3[i].text:
-            Stig_List_Headers[rarity[rar_count]].append(Headers_H2_3[i].find_parent('h2'))
+        if "2★ Stigmata" == Headers_H2_3[i].text or "1★ Stigmata" == Headers_H2_3[i].text:
+            Stig_List_Headers[rarity[rar_count]].append(Headers_H2_3[i].find_parent('h1'))
             Stig_List[rarity[rar_count]]['Sets'] = {}
     else:
-        Stig_List_Headers[rarity[rar_count]].append(Headers_H2_3[i].find_parent('h3'))
+        Stig_List_Headers[rarity[rar_count]].append(Headers_H2_3[i].find_parent('h2'))
         Stig_List[rarity[rar_count]][Headers_H2_3[i].text] = {}
 
-print(Stig_List)
+# print(Stig_List)
 
 def get_single_info(list_of_td):
     url_img_h = list(list_of_td[0])[0]
@@ -175,7 +190,7 @@ def get_set_info(list_of_td, has_effect):
 
 
 def get_table(rarity_, set_single):
-    if rarity_ != '2★' and rarity_ != '1★':
+    if rarity_ != '2★ Stigmata' and rarity_ != '1★ Stigmata':
             type_s = list(Stig_List[rarity_])[set_single]
             header = Stig_List_Headers[rarity_][set_single]
             has_effect = True
@@ -189,7 +204,7 @@ def get_table(rarity_, set_single):
         info = get_set_info(stigs, has_effect)
         set_name = info[0]
         set_info = info[1:]
-        if rarity_ == '2★' or rarity_ == '1★':
+        if rarity_ == '2★ Stigmata' or rarity_ == '1★ Stigmata':
             Stig_List[rarity_]['Sets'][set_name] = set_info
         else:
             Stig_List[rarity_][type_s][set_name] = set_info
@@ -199,10 +214,7 @@ def get_table(rarity_, set_single):
 for key in Stig_List.keys():
     print(key)
     get_table(key, 0)
-# get_table(rarity[0], 0)
-# get_table(rarity[1], 0)
-# get_table(rarity[2], 0)
-# get_table(rarity[3], 0)
+
 
 
 WEAPON_URL = 'https://honkaiimpact3.fandom.com/wiki/Weapons'
@@ -259,7 +271,7 @@ def get_weapons(url, rarity):
         else:
             break
 
-get_weapon(WEAPON_URL[:-13]+'/wiki/Domain_of_Genesis')
+# get_weapon(WEAPON_URL[:-13]+'/wiki/Domain_of_Genesis')
 
 emojis = None
 
@@ -280,7 +292,7 @@ class HI3(commands.Cog, name='HI3'):
 
 
     @commands.slash_command(guild_ids=[817117856147439646],description="Find a stigmata")
-    @option('rarity', description="Choose the rarity of the stigmata you're looking for.", autocomplete=discord.utils.basic_autocomplete(['4★','3★','2★','1★']))
+    @option('rarity', description="Choose the rarity of the stigmata you're looking for.", autocomplete=discord.utils.basic_autocomplete(rarity))
     @option('stig_type', description="The type of stigmata you're looking for.", autocomplete=stig_type_autocomp)
     @option('stig_name', description="The stigmata's name.", autocomplete=stig_list_autocomp)
     async def stigmata(self, ctx, rarity, stig_type, stig_name):
