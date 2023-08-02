@@ -2,3 +2,5 @@ key.txt
 cogs/__pycache__
 *.pyc
 prefixes.json
+Images/*
+client_info.txt
